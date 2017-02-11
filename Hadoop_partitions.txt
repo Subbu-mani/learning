@@ -1,0 +1,407 @@
+create table narayana (id int,name string,job string,sal int,comm int,deptno int) row format delimited fields terminated by '|';
+OK
+Time taken: 14.357 seconds
+hive> load data local inpath '/home/training/emp90' into table narayana;
+Copying data from file:/home/training/emp90
+Copying file: file:/home/training/emp90
+Loading data to table default.narayana
+Table default.narayana stats: [num_partitions: 0, num_files: 1, num_rows: 0, total_size: 505, raw_data_size: 0]
+OK
+Time taken: 1.602 seconds
+hive> select * from narayana;
+OK
+7369    SMITH   CLERK   NULL    NULL    20
+7499    ALLEN   SALESMAN        NULL    NULL    30
+7521    WARD    SALESMAN        NULL    NULL    30
+7566    JONES   MANAGER NULL    NULL    20
+7654    MARTIN  SALESMAN        NULL    NULL    30
+7698    BLAKE   MANAGER NULL    NULL    30
+7782    CLARK   MANAGER NULL    NULL    10
+7788    SCOTT   ANALYST NULL    NULL    20
+7839    KING    PRESIDENT       NULL    NULL    10
+7844    TURNER  SALESMAN        NULL    NULL    30
+7876    ADAMS   CLERK   NULL    NULL    20
+7900    JAMES   CLERK   NULL    NULL    30
+7902    FORD    ANALYST NULL    NULL    20
+7934    MILLER  CLERK   NULL    NULL    10
+Time taken: 0.769 seconds
+hive> create table katamarayudu (id int,name string) partitioned by (deptno int)row format delimited fields terminated by '|';
+OK
+Time taken: 0.139 seconds
+hive> set hive.exec.dynamic.partition.mode=nonstrict;
+hive> insert into table katamarayudu partition (deptno) select * from narayana;
+FAILED: SemanticException [Error 10044]: Line 1:18 Cannot insert into target table because column number/types are different 'deptno': Table insclause-0 has 3 columns, but query has 6 columns.
+hive> insert into table katamarayudu partition(deptno) select * from narayana;
+FAILED: SemanticException [Error 10044]: Line 1:18 Cannot insert into target table because column number/types are different 'deptno': Table insclause-0 has 3 columns, but query has 6 columns.
+hive> insert into table katamarayudu partition(deptno) select * from narayana;
+FAILED: SemanticException [Error 10044]: Line 1:18 Cannot insert into target table because column number/types are different 'deptno': Table insclause-0 has 3 columns, but query has 6 columns.
+hive> insert into table katamarayudu partition(deptno=3) select * from narayana;
+FAILED: SemanticException [Error 10044]: Line 1:18 Cannot insert into target table because column number/types are different '3': Table insclause-0 has 2 columns, but query has 6 columns.
+hive> create table katamarayudu1 (id int,name string,job string,sal int,comm int) partitioned by (deptno int)row format delimited fields terminated by '|';
+OK
+Time taken: 0.126 seconds
+hive> set hive.exec.dynamic.partition.mode=nonstrict;
+hive> insert into table katamarayudu1 partition(deptno) select * from narayana;
+Total MapReduce jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_201610161448_0001, Tracking URL = http://localhost:50030/jobdetails.jsp?jobid=job_201610161448_0001
+Kill Command = /usr/local/hadoop/libexec/../bin/hadoop job  -kill job_201610161448_0001
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2016-10-16 15:27:55,956 Stage-1 map = 0%,  reduce = 0%
+2016-10-16 15:28:05,325 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:06,379 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:07,419 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:08,455 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:09,482 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:10,507 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:11,532 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:12,563 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+2016-10-16 15:28:13,612 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 1.36 sec
+MapReduce Total cumulative CPU time: 1 seconds 360 msec
+Ended Job = job_201610161448_0001
+Ended Job = -1628888835, job is filtered out (removed at runtime).
+Ended Job = 2039438015, job is filtered out (removed at runtime).
+Moving data to: hdfs://localhost:54310/tmp/hive-training/hive_2016-10-16_15-27-35_505_1927191411272968874/-ext-10000
+Loading data to table default.katamarayudu1 partition (deptno=null)
+        Loading partition {deptno=30}
+        Loading partition {deptno=20}
+        Loading partition {deptno=10}
+Partition default.katamarayudu1{deptno=10} stats: [num_files: 1, num_rows: 0, total_size: 75, raw_data_size: 0]
+Partition default.katamarayudu1{deptno=20} stats: [num_files: 1, num_rows: 0, total_size: 120, raw_data_size: 0]
+Partition default.katamarayudu1{deptno=30} stats: [num_files: 1, num_rows: 0, total_size: 153, raw_data_size: 0]
+Table default.katamarayudu1 stats: [num_partitions: 3, num_files: 3, num_rows: 0, total_size: 348, raw_data_size: 0]
+14 Rows loaded to katamarayudu1
+MapReduce Jobs Launched:
+Job 0: Map: 1   Cumulative CPU: 1.36 sec   HDFS Read: 716 HDFS Write: 348 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 360 msec
+OK
+Time taken: 44.682 seconds
+hive> show partition katamarayudu1;
+FAILED: ParseException line 1:0 cannot recognize input near 'show' 'partition' 'katamarayudu1' in ddl statement
+
+hive> show partitions katamarayudu1;
+OK
+deptno=10
+deptno=20
+deptno=30
+Time taken: 0.369 seconds
+hive> alter table katamarayudu1 add partition (deptno=40);
+OK
+Time taken: 0.643 seconds
+hive> load data local inpath '/home/tarining/40'into table katamarayudu1;
+FAILED: SemanticException [Error 10062]: Need to specify partition columns because the destination table is partitioned
+hive> load data local inpath '/home/tarining/40'into table katamarayudu1 partition (deptno=40);
+FAILED: SemanticException Line 1:23 Invalid path ''/home/tarining/40'': No files matching path file:/home/tarining/40
+hive> load data local inpath '/home/tarining/40'partition (deptno=40)into table katamarayudu1 ;
+FAILED: ParseException line 1:42 mismatched input 'partition' expecting INTO near ''/home/tarining/40'' in load statement
+
+hive> load data local inpath '/home/tarining/401'into table katamarayudu1 partition (deptno=40);
+FAILED: SemanticException Line 1:23 Invalid path ''/home/tarining/401'': No files matching path file:/home/tarining/401
+hive> load data local inpath '/home/tarining/401' into table katamarayudu1 partition(deptno=40);
+FAILED: SemanticException Line 1:23 Invalid path ''/home/tarining/401'': No files matching path file:/home/tarining/401
+hive> load data local inpath '/home/tarining/local' into table katamarayudu1 partition(deptno=40);
+FAILED: SemanticException Line 1:23 Invalid path ''/home/tarining/local'': No files matching path file:/home/tarining/local
+hive> load data local inpath '/home/training/local' into table katamarayudu1 partition(deptno=40);
+Copying data from file:/home/training/local
+Copying file: file:/home/training/local
+Loading data to table default.katamarayudu1 partition (deptno=40)
+Partition default.katamarayudu1{deptno=40} stats: [num_files: 1, num_rows: 0, total_size: 63, raw_data_size: 0]
+Table default.katamarayudu1 stats: [num_partitions: 4, num_files: 4, num_rows: 0, total_size: 411, raw_data_size: 0]
+OK
+Time taken: 1.884 seconds
+hive> show partitions katamarayudu1;
+OK
+deptno=10
+deptno=20
+deptno=30
+deptno=40
+Time taken: 0.269 seconds
+hive> select * from katamarayudu1;
+OK
+7782    CLARK   MANAGER NULL    NULL    10
+7839    KING    PRESIDENT       NULL    NULL    10
+7934    MILLER  CLERK   NULL    NULL    10
+7369    SMITH   CLERK   NULL    NULL    20
+7566    JONES   MANAGER NULL    NULL    20
+7788    SCOTT   ANALYST NULL    NULL    20
+7876    ADAMS   CLERK   NULL    NULL    20
+7902    FORD    ANALYST NULL    NULL    20
+7499    ALLEN   SALESMAN        NULL    NULL    30
+7521    WARD    SALESMAN        NULL    NULL    30
+7654    MARTIN  SALESMAN        NULL    NULL    30
+7698    BLAKE   MANAGER NULL    NULL    30
+7844    TURNER  SALESMAN        NULL    NULL    30
+7900    JAMES   CLERK   NULL    NULL    30
+889     subbu   manager 1900    NULL    40
+780     shashi  hrs     2300    NULL    40
+Time taken: 0.868 seconds
+hive> alter table katamarayudu1 rename to subbu_nethra;
+OK
+Time taken: 0.681 seconds
+hive> select * from subbu_nethra;
+OK
+7782    CLARK   MANAGER NULL    NULL    10
+7839    KING    PRESIDENT       NULL    NULL    10
+7934    MILLER  CLERK   NULL    NULL    10
+7369    SMITH   CLERK   NULL    NULL    20
+7566    JONES   MANAGER NULL    NULL    20
+7788    SCOTT   ANALYST NULL    NULL    20
+7876    ADAMS   CLERK   NULL    NULL    20
+7902    FORD    ANALYST NULL    NULL    20
+7499    ALLEN   SALESMAN        NULL    NULL    30
+7521    WARD    SALESMAN        NULL    NULL    30
+7654    MARTIN  SALESMAN        NULL    NULL    30
+7698    BLAKE   MANAGER NULL    NULL    30
+7844    TURNER  SALESMAN        NULL    NULL    30
+7900    JAMES   CLERK   NULL    NULL    30
+889     subbu   manager 1900    NULL    40
+780     shashi  hrs     2300    NULL    40
+Time taken: 0.912 seconds
+hive> create table katamarayudu2 (id int,name string,job string,sal int,comm int,deptno int)row format delimited fields terminated by '|';
+OK
+Time taken: 0.517 seconds
+hive> create table katamarayudu3 (id int,name string,job string,sal int,comm int,deptno int)bucketed by(deptno)row format delimited fields terminated by '|';
+FAILED: ParseException line 1:86 mismatched input 'bucketed' expecting EOF near ')'
+
+hive> create table katamarayudu3 (id int,name string,job string,sal int,comm int,deptno int)clustered by(deptno)row format delimited fields terminated by '|';
+FAILED: ParseException line 1:106 mismatched input 'row' expecting INTO near ')' in table buckets specification
+
+hive> create table katamarayudu3 (id int,name string,job string,sal int,comm int,deptno int)clustered by(deptno)into 4 buckets row format delimited fields terminated by '|';
+OK
+Time taken: 0.26 seconds
+hive> set hive.enforce.bucketing=true;
+hive> insert into table katamarayudu3  select * from  katamarayudu1;
+FAILED: SemanticException [Error 10001]: Line 1:48 Table not found 'katamarayudu1'
+hive> insert into table katamarayudu3  select * from  subbu_nethra;
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 4
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapred.reduce.tasks=<number>
+Starting Job = job_201610161448_0002, Tracking URL = http://localhost:50030/jobdetails.jsp?jobid=job_201610161448_0002
+Kill Command = /usr/local/hadoop/libexec/../bin/hadoop job  -kill job_201610161448_0002
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 4
+2016-10-16 16:35:52,997 Stage-1 map = 0%,  reduce = 0%
+2016-10-16 16:36:07,581 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:08,797 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:09,811 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:10,827 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:11,848 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:13,092 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:14,118 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:15,132 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:16,159 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:17,178 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:18,196 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:19,288 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:20,303 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:21,325 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:22,353 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:23,382 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:24,415 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:25,445 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:26,518 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:27,533 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:28,557 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:29,590 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:30,605 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 7.19 sec
+2016-10-16 16:36:31,636 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 13.46 sec
+2016-10-16 16:36:32,656 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 13.46 sec
+2016-10-16 16:36:33,796 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 13.46 sec
+2016-10-16 16:36:34,816 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:36,071 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:37,085 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:38,103 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:39,126 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:40,146 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:41,223 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:42,240 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:43,260 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:44,291 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:45,307 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:46,385 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:47,405 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:48,423 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:49,478 Stage-1 map = 100%,  reduce = 50%, Cumulative CPU 17.64 sec
+2016-10-16 16:36:50,527 Stage-1 map = 100%,  reduce = 75%, Cumulative CPU 21.66 sec
+2016-10-16 16:36:51,539 Stage-1 map = 100%,  reduce = 75%, Cumulative CPU 21.66 sec
+2016-10-16 16:36:52,550 Stage-1 map = 100%,  reduce = 75%, Cumulative CPU 21.66 sec
+2016-10-16 16:36:53,562 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:36:54,576 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:36:55,593 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:36:56,670 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:36:57,685 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:36:58,697 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:36:59,711 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:37:00,748 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:37:01,762 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+2016-10-16 16:37:02,773 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 25.64 sec
+MapReduce Total cumulative CPU time: 25 seconds 640 msec
+Ended Job = job_201610161448_0002
+Loading data to table default.katamarayudu3
+Table default.katamarayudu3 stats: [num_partitions: 0, num_files: 4, num_rows: 0, total_size: 445, raw_data_size: 0]
+16 Rows loaded to katamarayudu3
+MapReduce Jobs Launched:
+Job 0: Map: 1  Reduce: 4   Cumulative CPU: 25.64 sec   HDFS Read: 909 HDFS Write: 445 SUCCESS
+Total MapReduce CPU Time Spent: 25 seconds 640 msec
+OK
+Time taken: 96.76 seconds
+hive> select* from subbu_nethra;
+OK
+7782    CLARK   MANAGER NULL    NULL    10
+7839    KING    PRESIDENT       NULL    NULL    10
+7934    MILLER  CLERK   NULL    NULL    10
+7369    SMITH   CLERK   NULL    NULL    20
+7566    JONES   MANAGER NULL    NULL    20
+7788    SCOTT   ANALYST NULL    NULL    20
+7876    ADAMS   CLERK   NULL    NULL    20
+7902    FORD    ANALYST NULL    NULL    20
+7499    ALLEN   SALESMAN        NULL    NULL    30
+7521    WARD    SALESMAN        NULL    NULL    30
+7654    MARTIN  SALESMAN        NULL    NULL    30
+7698    BLAKE   MANAGER NULL    NULL    30
+7844    TURNER  SALESMAN        NULL    NULL    30
+7900    JAMES   CLERK   NULL    NULL    30
+889     subbu   manager 1900    NULL    40
+780     shashi  hrs     2300    NULL    40
+Time taken: 0.847 seconds
+hive> select id,name from tablesample(1 out of 4 buckets);
+FAILED: ParseException line 1:20 cannot recognize input near 'tablesample' '(' '1' in join source
+
+hive> select id,name from tablesample(1 out of 4 on deptno);
+FAILED: ParseException line 1:20 cannot recognize input near 'tablesample' '(' '1' in join source
+
+hive> select id,name from tablesample(buckets 1 out of 4 on deptno);
+FAILED: ParseException line 1:20 cannot recognize input near 'tablesample' '(' 'buckets' in join source
+
+hive> select * from tablesample(buckets 1 out of 4 on deptno);
+FAILED: ParseException line 1:14 cannot recognize input near 'tablesample' '(' 'buckets' in join source
+
+hive> select * from katamarayudu3 tablesample(buckets 1 out of 4 on deptno);
+FAILED: ParseException line 1:28 cannot recognize input near 'tablesample' '(' 'buckets' in table sample specification
+
+hive> select* from katamarayudu3;
+OK
+889     subbu   manager 1900    NULL    40
+780     shashi  hrs     2300    NULL    40
+7369    SMITH   CLERK   NULL    NULL    20
+7566    JONES   MANAGER NULL    NULL    20
+7788    SCOTT   ANALYST NULL    NULL    20
+7876    ADAMS   CLERK   NULL    NULL    20
+7902    FORD    ANALYST NULL    NULL    20
+7782    CLARK   MANAGER NULL    NULL    10
+7839    KING    PRESIDENT       NULL    NULL    10
+7934    MILLER  CLERK   NULL    NULL    10
+7521    WARD    SALESMAN        NULL    NULL    30
+7654    MARTIN  SALESMAN        NULL    NULL    30
+7698    BLAKE   MANAGER NULL    NULL    30
+7844    TURNER  SALESMAN        NULL    NULL    30
+7900    JAMES   CLERK   NULL    NULL    30
+7499    ALLEN   SALESMAN        NULL    NULL    30
+Time taken: 0.748 seconds
+hive> select * from katamarayudu3 tablesample(buckets 1 out of 3 on deptno);
+FAILED: ParseException line 1:28 cannot recognize input near 'tablesample' '(' 'buckets' in table sample specification
+
+hive> select * from katamarayudu3tablesample(buckets 1 out of 3 on deptno);
+FAILED: ParseException line 1:38 mismatched input '(' expecting EOF near 'katamarayudu3tablesample'
+
+hive> select * from katamarayudu3(buckets 1 out of 3 on deptno);
+FAILED: ParseException line 1:27 mismatched input '(' expecting EOF near 'katamarayudu3'
+
+hive> select * from katamarayudu3 tablesample(1 out of 3 );
+FAILED: ParseException line 1:42 mismatched input 'out' expecting KW_PERCENT near '1' in table split sample specification
+
+hive> select * from katamarayudu3 tablesample(bucket 1 out of 3 );
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_201610161448_0003, Tracking URL = http://localhost:50030/jobdetails.jsp?jobid=job_201610161448_0003
+Kill Command = /usr/local/hadoop/libexec/../bin/hadoop job  -kill job_201610161448_0003
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2016-10-16 17:06:04,340 Stage-1 map = 0%,  reduce = 0%
+2016-10-16 17:06:12,412 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:13,433 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:14,446 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:15,600 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:16,654 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:17,773 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:18,787 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:19,913 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:20,924 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.43 sec
+2016-10-16 17:06:21,936 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.43 sec
+MapReduce Total cumulative CPU time: 2 seconds 430 msec
+Ended Job = job_201610161448_0003
+MapReduce Jobs Launched:
+Job 0: Map: 1   Cumulative CPU: 2.43 sec   HDFS Read: 746 HDFS Write: 171 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 430 msec
+OK
+7521    WARD    SALESMAN        NULL    NULL    30
+7654    MARTIN  SALESMAN        NULL    NULL    30
+7698    BLAKE   MANAGER NULL    NULL    30
+7844    TURNER  SALESMAN        NULL    NULL    30
+7900    JAMES   CLERK   NULL    NULL    30
+7499    ALLEN   SALESMAN        NULL    NULL    30
+Time taken: 52.969 seconds
+hive> select * from katamarayudu3 tablesample(bucket 2 out of 3 );
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_201610161448_0004, Tracking URL = http://localhost:50030/jobdetails.jsp?jobid=job_201610161448_0004
+Kill Command = /usr/local/hadoop/libexec/../bin/hadoop job  -kill job_201610161448_0004
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2016-10-16 17:20:30,546 Stage-1 map = 0%,  reduce = 0%
+2016-10-16 17:20:39,613 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:40,638 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:41,652 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:42,681 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:43,695 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:44,706 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:45,720 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:46,737 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:47,746 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 2.15 sec
+2016-10-16 17:20:48,758 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.15 sec
+MapReduce Total cumulative CPU time: 2 seconds 150 msec
+Ended Job = job_201610161448_0004
+MapReduce Jobs Launched:
+Job 0: Map: 1   Cumulative CPU: 2.15 sec   HDFS Read: 746 HDFS Write: 139 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 150 msec
+OK
+889     subbu   manager 1900    NULL    40
+780     shashi  hrs     2300    NULL    40
+7782    CLARK   MANAGER NULL    NULL    10
+7839    KING    PRESIDENT       NULL    NULL    10
+7934    MILLER  CLERK   NULL    NULL    10
+Time taken: 36.591 seconds
+hive> select * from katamarayudu3 tablesample(bucket 3 out of 3 );
+Total MapReduce jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_201610161448_0005, Tracking URL = http://localhost:50030/jobdetails.jsp?jobid=job_201610161448_0005
+Kill Command = /usr/local/hadoop/libexec/../bin/hadoop job  -kill job_201610161448_0005
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+2016-10-16 18:46:58,033 Stage-1 map = 0%,  reduce = 0%
+2016-10-16 18:47:16,686 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:17,696 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:18,819 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:19,854 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:20,877 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:23,787 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:24,976 Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 4.62 sec
+2016-10-16 18:47:26,347 Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 4.62 sec
+MapReduce Total cumulative CPU time: 4 seconds 620 msec
+Ended Job = job_201610161448_0005
+MapReduce Jobs Launched:
+Job 0: Map: 1   Cumulative CPU: 4.62 sec   HDFS Read: 746 HDFS Write: 135 SUCCESS
+Total MapReduce CPU Time Spent: 4 seconds 620 msec
+OK
+7369    SMITH   CLERK   NULL    NULL    20
+7566    JONES   MANAGER NULL    NULL    20
+7788    SCOTT   ANALYST NULL    NULL    20
+7876    ADAMS   CLERK   NULL    NULL    20
+7902    FORD    ANALYST NULL    NULL    20
+Time taken: 62.969 seconds

@@ -1,0 +1,830 @@
+A = load 'emp.csv' using PigStorage (',') as (empno:int, ename:chararray, job:chararray, sal:double, comm:float, deptno:int);
+grunt> describe A;
+                     OR
+					 THIS IS LOCAL TO LOAD
+		
+
+ A = load '/home/training/emp' using PigStorage(',') as (empno:int , ename:chararray, job:chararray, sal:float, comm:double, deptno:int);
+------> describe A;
+A: {empno: int,ename: chararray,job: chararray,sal: float,comm: double,deptno: int}
+------> dump A;
+			 
+
+pain unnadi pig chaisedanilovunte alachiyali
+
+      local lo unte ela chaiyali:
+ 
+ ---> A = load '/home/training/dvs/emp.csv' using PigStorage (',') as (empno:int, ename:chararray, job:chararray, sal:double, comm:float, deptno:int);
+> dump A;
+
+   (7369,SMITH,CLERK,800.0,,20)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30)
+(7521,WARD,SALESMAN,1250.0,500.0,30)
+(7566,JONES,MANAGER,2975.0,,20)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30)
+(7698,BLAKE,MANAGER,2850.0,,30)
+(7782,CLARK,MANAGER,2450.0,,10)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7844,TURNER,SALESMAN,1500.0,0.0,30)
+(7876,ADAMS,CLERK,1100.0,,20)
+(7900,JAMES,CLERK,950.0,,30)
+(7902,FORD,ANALYST,3000.0,,20)
+(7934,MILLER,CLERK,1300.0,,10)
+----> B = filter A by deptno==20;
+------> dump B;
+    (7369,SMITH,CLERK,800.0,,20)
+(7566,JONES,MANAGER,2975.0,,20)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7876,ADAMS,CLERK,1100.0,,20)
+(7902,FORD,ANALYST,3000.0,,20)
+-----> B = filter A by deptno==10;
+-----> dump B;
+
+ (7782,CLARK,MANAGER,2450.0,,10)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7934,MILLER,CLERK,1300.0,,10)
+-----> B = filter A by sal >2000;
+2016-03-31 14:46:38,768 [main] WARN  org.apache.pig.PigServer - Encountered Warning IMPLICIT_CAST_TO_DOUBLE 1 time(s).
+------> dump B;
+
+     (7566,JONES,MANAGER,2975.0,,20)
+(7698,BLAKE,MANAGER,2850.0,,30)
+(7782,CLARK,MANAGER,2450.0,,10)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7902,FORD,ANALYST,3000.0,,20)
+------> B = filter A by ename='JONES',job='MANAGER';
+2016-03-31 14:50:02,548 [main] ERROR org.apache.pig.tools.grunt.Grunt - ERROR 1200: <line 7, column 21>  mismatched input '=' expecting IS
+Details at logfile: /home/training/pig_1459414779660.log
+------> dump B;
+
+     (7566,JONES,MANAGER,2975.0,,20)
+(7698,BLAKE,MANAGER,2850.0,,30)
+(7782,CLARK,MANAGER,2450.0,,10)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7902,FORD,ANALYST,3000.0,,20)
+------> C = limit B 4;
+2016-03-31 14:52:41,615 [main] WARN  org.apache.pig.PigServer - Encountered Warning IMPLICIT_CAST_TO_DOUBLE 1 time(s).
+------> dump C;
+ 
+ 
+ (7566,JONES,MANAGER,2975.0,,20)
+(7698,BLAKE,MANAGER,2850.0,,30)
+(7782,CLARK,MANAGER,2450.0,,10)
+(7788,SCOTT,ANALYST,3000.0,,20)
+
+STORAGE PENDIG:
+
+ ---->Store C into '/home/training/pigout' using PigStorage(',');
+
+
+Job Stats (time in seconds):
+JobId   Alias   Feature Outputs
+job_local_0006  A,B,C           /home/training/pigout,
+
+Input(s):
+Successfully read records from: "/home/training/emp"
+
+Output(s):
+Successfully stored records in: "/home/training/pigout"
+--------> Store A into '/home/training/pigout1'
+
+-----------------IN HDFS-----------
+in local type ls 
+after display the pigout
+[training@localhost ~]$ cd pigout
+[training@localhost pigout]$ ls
+part-r-00000  _temporary
+[training@localhost pigout]$ cat part-m-00000
+cat: part-m-00000: No such file or directory
+[training@localhost pigout]$ cat part-r-00000
+7369,SMITH,CLERK,800.0,,20
+7566,JONES,MANAGER,2975.0,,20
+7788,SCOTT,ANALYST,3000.0,,20
+[training@localhost pigout]$ cd ..
+[training@localhost ~]$ cd pigout1
+[training@localhost pigout1]$ ls
+part-m-00000  _temporary
+[training@localhost pigout1]$ cat part-m-00000
+7369    SMITH   CLERK   800.0           20
+7499    ALLEN   SALESMAN        1600.0  300.0   30
+7521    WARD    SALESMAN        1250.0  500.0   30
+7566    JONES   MANAGER 2975.0          20
+7654    MARTIN  SALESMAN        1250.0  1400.0  30
+7698    BLAKE   MANAGER 2850.0          30
+7782    CLARK   MANAGER 2450.0          10
+7788    SCOTT   ANALYST 3000.0          20
+7839    KING    PRESIDENT       5000.0          10
+7844    TURNER  SALESMAN        1500.0  0.0     30
+7876    ADAMS   CLERK   1100.0          20
+7900    JAMES   CLERK   950.0           30
+7902    FORD    ANALYST 3000.0          20
+7934    MILLER  CLERK   1300.0          10
+
+-------------------------------SPLIT COMMAND--------------------------
+
+
+ SPLIT A into deptno10 if deptno==10,deptno20 if deptno==20,deptno30 if deptno==30;
+------------> dump deptno10;
+(7782,CLARK,MANAGER,2450.0,,10)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7934,MILLER,CLERK,1300.0,,10)
+----------> dump deptno20;
+---------->dump deptno30;
+-------------------------------------JSON COMMAND-------------------------- 
+
+CREATE JSON BAG  
+---------------{"name":"SUBBU","address":"BANLORE","marks":88,"phone":1234}
+
+
+---------------> A = load '/user/training/sample1234.json' using JsonLoader('name:chararray,address:chararray,marks:int,phn:int');
+                                       grunt> dump A;
+                Input(s):
+Successfully read 1 records (432 bytes) from: "/user/training/sample1234.json"
+
+Output(s):
+Successfully stored 1 records (28 bytes) in: "hdfs://localhost:54310/tmp/temp-1580244644/tmp-404632799"
+
+Counters:
+Total records written : 1
+Total bytes written : 28
+Spillable Memory Manager spill count : 0
+Total bags proactively spilled: 0
+Total records proactively spilled: 0
+
+Job DAG:
+job_201604051325_0005
+
+
+2016-04-05 13:45:58,478 [main] INFO  org.apache.pig.backend.hadoop.executionengine.mapReduceLayer.MapReduceLauncher - Success!
+2016-04-05 13:45:58,487 [main] INFO  org.apache.hadoop.mapreduce.lib.input.FileInputFormat - Total input paths to process : 1
+2016-04-05 13:45:58,487 [main] INFO  org.apache.pig.backend.hadoop.executionengine.util.MapRedUtil - Total input paths to process : 1
+(SUBBU,BANLORE,88,1234)
+ -------------------> Store B into '/user/training/json_output' using JsonStorage();
+   ok
+   
+ ---------------IN HDFS-----------------------------
+          drwxr-xr-x   - training supergroup          0 2016-04-05 14:21 /user/training/json_output
+drwxr-xr-x   - training supergroup          0 2015-09-28 00:46 /user/training/nith
+-rw-r--r--   1 training supergroup        146 2015-11-17 19:09 /user/training/wordCountInput.txt
+[training@localhost ~]$ hadoop fs -ls /user/training/json_output
+Warning: $HADOOP_HOME is deprecated.
+
+Found 4 items
+-rw-r--r--   1 training supergroup         23 2016-04-05 14:21 /user/training/json_output/.pig_header
+-rw-r--r--   1 training supergroup        428 2016-04-05 14:21 /user/training/json_output/.pig_schema
+-rw-r--r--   1 training supergroup          0 2016-04-05 14:21 /user/training/json_output/_SUCCESS
+-rw-r--r--   1 training supergroup         59 2016-04-05 14:21 /user/training/json_output/part-m-00000
+[training@localhost ~]$ hadoop fs -ls /user/training/json_output//part-m-00000
+Warning: $HADOOP_HOME is deprecated.
+
+Found 1 items
+-rw-r--r--   1 training supergroup         59 2016-04-05 14:21 /user/training/json_output/part-m-00000
+[training@localhost ~]$ hadoop fs -ls /user/training/json_output/part-m-00000
+Warning: $HADOOP_HOME is deprecated.
+
+Found 1 items
+-rw-r--r--   1 training supergroup         59 2016-04-05 14:21 /user/training/json_output/part-m-00000
+[training@localhost ~]$ hadoop fs -cat /user/training/json_output/part-m-00000
+Warning: $HADOOP_HOME is deprecated.
+
+{"name":"SUBBU","address":"BANLORE","marks":88,"phn":1234}
+[training@localhost ~]$
+
+
+
+
+ ---->C = foreach A genarate $0,$3;
+    dump C;
+	(7369,SMITH,CLERK,800.0,,20)
+(7566,JONES,MANAGER,2975.0,,20)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7876,ADAMS,CLERK,1100.0,,20)
+---> B = foreach A genarate $0,$3;
+ dump B;
+ (7369,SMITH,CLERK,800.0,,20)
+(7566,JONES,MANAGER,2975.0,,20)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7876,ADAMS,CLERK,1100.0,,20)
+(7902,FORD,ANALYST,3000.0,,20)
+-----> B = foreach A genarate $1,$4;
+   dump A;
+   (7369,SMITH,CLERK,800.0,,20)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30)
+(7521,WARD,SALESMAN,1250.0,500.0,30)
+(7566,JONES,MANAGER,2975.0,,20)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30)
+(7698,BLAKE,MANAGER,2850.0,,30)
+(7782,CLARK,MANAGER,2450.0,,10)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7844,TURNER,SALESMAN,1500.0,0.0,30)
+(7876,ADAMS,CLERK,1100.0,,20)
+(7900,JAMES,CLERK,950.0,,30)
+(7902,FORD,ANALYST,3000.0,,20)
+(7934,MILLER,CLERK,1300.0,,10)
+----> X = foreach A genarate *,sal*0.06 as bouns,sal*0.08 as incentive;
+     dump A;
+	 (7369,SMITH,CLERK,800.0,,20,48.0,64.0)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,96.0,128.0)
+(7521,WARD,SALESMAN,1250.0,500.0,30,75.0,100.0)
+(7566,JONES,MANAGER,2975.0,,20,178.5,238.0)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,75.0,100.0)
+(7698,BLAKE,MANAGER,2850.0,,30,171.0,228.0)
+(7782,CLARK,MANAGER,2450.0,,10,147.0,196.0)
+(7788,SCOTT,ANALYST,3000.0,,20,180.0,240.0)
+(7839,KING,PRESIDENT,5000.0,,10,300.0,400.0)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,90.0,120.0)
+(7876,ADAMS,CLERK,1100.0,,20,66.0,88.0)
+(7900,JAMES,CLERK,950.0,,30,57.0,76.0)
+(7902,FORD,ANALYST,3000.0,,20,180.0,240.0)
+(7934,MILLER,CLERK,1300.0,,10,78.0,104.0)
+
+	 
+
+
+
+
+
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                 JOINS NOTEBOOK
+				 
+ A = load 'emp' using PigStorage (',') as (empno:int,ename:chararray,job:chararray,sal:double,comm:float,deptno:int);
+grunt> B = load 'dept.csv' using PigStorage (',') as (deptno:int,dname:chararray,dloc:chararray);
+grunt> describe B;
+B: {deptno: int,dname: chararray,dloc: chararray}
+grunt> describe A;
+A: {empno: int,ename: chararray,job: chararray,sal: double,comm: float,deptno: int}
+ 
+  dump A;
+
+  
+  (7369,SMITH,CLERK,800.0,,20)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30)
+(7521,WARD,SALESMAN,1250.0,500.0,30)
+(7566,JONES,MANAGER,2975.0,,20)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30)
+(7698,BLAKE,MANAGER,2850.0,,30)
+(7782,CLARK,MANAGER,2450.0,,10)
+(7788,SCOTT,ANALYST,3000.0,,20)
+(7839,KING,PRESIDENT,5000.0,,10)
+(7844,TURNER,SALESMAN,1500.0,0.0,30)
+(7876,ADAMS,CLERK,1100.0,,20)
+(7900,JAMES,CLERK,950.0,,30)
+(7902,FORD,ANALYST,3000.0,,20)
+(7934,MILLER,CLERK,1300.0,,10)
+
+dump B;
+
+
+(10,ACCOUNTING,NEW YORK)
+(20,RESEARCH,DALLAS)
+(30,SALES,CHICAGO)
+(40,OPERATIONS,BOSTON)
+
+
+ --->C = join A by deptno, B by deptno;
+   dump C;
+ 
+ (7839,KING,PRESIDENT,5000.0,,10,10,ACCOUNTING,NEW YORK)
+(7782,CLARK,MANAGER,2450.0,,10,10,ACCOUNTING,NEW YORK)
+(7934,MILLER,CLERK,1300.0,,10,10,ACCOUNTING,NEW YORK)
+(7369,SMITH,CLERK,800.0,,20,20,RESEARCH,DALLAS)
+(7566,JONES,MANAGER,2975.0,,20,20,RESEARCH,DALLAS)
+(7876,ADAMS,CLERK,1100.0,,20,20,RESEARCH,DALLAS)
+(7902,FORD,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7788,SCOTT,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,30,SALES,CHICAGO)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,30,SALES,CHICAGO)
+(7900,JAMES,CLERK,950.0,,30,30,SALES,CHICAGO)
+(7698,BLAKE,MANAGER,2850.0,,30,30,SALES,CHICAGO)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,30,SALES,CHICAGO)
+(7521,WARD,SALESMAN,1250.0,500.0,30,30,SALES,CHICAGO)
+
+
+ describe C;
+C: {A::empno: int,A::ename: chararray,A::job: chararray,A::sal: double,A::comm: float,A::deptno: int,B::deptno: int,B::dname: chararray,B::dloc: chararray}
+---> D = foreach C generate A::ename,A::sal,B::dname,B::dloc;
+
+dump  D;
+
+(KING,5000.0,ACCOUNTING,NEW YORK)
+(CLARK,2450.0,ACCOUNTING,NEW YORK)
+(MILLER,1300.0,ACCOUNTING,NEW YORK)
+(SMITH,800.0,RESEARCH,DALLAS)
+(JONES,2975.0,RESEARCH,DALLAS)
+(ADAMS,1100.0,RESEARCH,DALLAS)
+(FORD,3000.0,RESEARCH,DALLAS)
+(SCOTT,3000.0,RESEARCH,DALLAS)
+(ALLEN,1600.0,SALES,CHICAGO)
+(TURNER,1500.0,SALES,CHICAGO)
+(JAMES,950.0,SALES,CHICAGO)
+(BLAKE,2850.0,SALES,CHICAGO)
+(MARTIN,1250.0,SALES,CHICAGO)
+(WARD,1250.0,SALES,CHICAGO)
+
+> D = foreach C generate $0,$3,$7,$8;;
+> dump D;
+
+(7839,5000.0,ACCOUNTING,NEW YORK)
+(7782,2450.0,ACCOUNTING,NEW YORK)
+(7934,1300.0,ACCOUNTING,NEW YORK)
+(7369,800.0,RESEARCH,DALLAS)
+(7566,2975.0,RESEARCH,DALLAS)
+(7876,1100.0,RESEARCH,DALLAS)
+(7902,3000.0,RESEARCH,DALLAS)
+(7788,3000.0,RESEARCH,DALLAS)
+(7499,1600.0,SALES,CHICAGO)
+(7844,1500.0,SALES,CHICAGO)
+(7900,950.0,SALES,CHICAGO)
+(7698,2850.0,SALES,CHICAGO)
+(7654,1250.0,SALES,CHICAGO)
+(7521,1250.0,SALES,CHICAGO)
+
+ C = join A by deptno left outer,B by deptno;
+grunt> dump C;
+
+
+
+(7839,KING,PRESIDENT,5000.0,,10,10,ACCOUNTING,NEW YORK)
+(7782,CLARK,MANAGER,2450.0,,10,10,ACCOUNTING,NEW YORK)
+(7934,MILLER,CLERK,1300.0,,10,10,ACCOUNTING,NEW YORK)
+(7369,SMITH,CLERK,800.0,,20,20,RESEARCH,DALLAS)
+(7566,JONES,MANAGER,2975.0,,20,20,RESEARCH,DALLAS)
+(7876,ADAMS,CLERK,1100.0,,20,20,RESEARCH,DALLAS)
+(7902,FORD,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7788,SCOTT,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,30,SALES,CHICAGO)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,30,SALES,CHICAGO)
+(7900,JAMES,CLERK,950.0,,30,30,SALES,CHICAGO)
+(7698,BLAKE,MANAGER,2850.0,,30,30,SALES,CHICAGO)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,30,SALES,CHICAGO)
+(7521,WARD,SALESMAN,1250.0,500.0,30,30,SALES,CHICAGO)
+
+C = join A by deptno right outer, B by deptno;
+   dump C;
+   
+   
+   (7839,KING,PRESIDENT,5000.0,,10,10,ACCOUNTING,NEW YORK)
+(7782,CLARK,MANAGER,2450.0,,10,10,ACCOUNTING,NEW YORK)
+(7934,MILLER,CLERK,1300.0,,10,10,ACCOUNTING,NEW YORK)
+(7369,SMITH,CLERK,800.0,,20,20,RESEARCH,DALLAS)
+(7566,JONES,MANAGER,2975.0,,20,20,RESEARCH,DALLAS)
+(7876,ADAMS,CLERK,1100.0,,20,20,RESEARCH,DALLAS)
+(7902,FORD,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7788,SCOTT,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,30,SALES,CHICAGO)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,30,SALES,CHICAGO)
+(7900,JAMES,CLERK,950.0,,30,30,SALES,CHICAGO)
+(7698,BLAKE,MANAGER,2850.0,,30,30,SALES,CHICAGO)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,30,SALES,CHICAGO)
+(7521,WARD,SALESMAN,1250.0,500.0,30,30,SALES,CHICAGO)
+(,,,,,,40,OPERATIONS,BOSTON)
+
+C = join A by deptno full outer, B by deptno;
+dump C;
+
+(7839,KING,PRESIDENT,5000.0,,10,10,ACCOUNTING,NEW YORK)
+(7782,CLARK,MANAGER,2450.0,,10,10,ACCOUNTING,NEW YORK)
+(7934,MILLER,CLERK,1300.0,,10,10,ACCOUNTING,NEW YORK)
+(7369,SMITH,CLERK,800.0,,20,20,RESEARCH,DALLAS)
+(7566,JONES,MANAGER,2975.0,,20,20,RESEARCH,DALLAS)
+(7876,ADAMS,CLERK,1100.0,,20,20,RESEARCH,DALLAS)
+(7902,FORD,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7788,SCOTT,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,30,SALES,CHICAGO)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,30,SALES,CHICAGO)
+(7900,JAMES,CLERK,950.0,,30,30,SALES,CHICAGO)
+(7698,BLAKE,MANAGER,2850.0,,30,30,SALES,CHICAGO)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,30,SALES,CHICAGO)
+(7521,WARD,SALESMAN,1250.0,500.0,30,30,SALES,CHICAGO)
+(,,,,,,40,OPERATIONS,BOSTON)
+
+C = cross A,B;
+dump C;
+
+(7369,SMITH,CLERK,800.0,,20,10,ACCOUNTING,NEW YORK)
+(7369,SMITH,CLERK,800.0,,20,20,RESEARCH,DALLAS)
+(7369,SMITH,CLERK,800.0,,20,30,SALES,CHICAGO)
+(7369,SMITH,CLERK,800.0,,20,40,OPERATIONS,BOSTON)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,10,ACCOUNTING,NEW YORK)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,20,RESEARCH,DALLAS)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,30,SALES,CHICAGO)
+(7499,ALLEN,SALESMAN,1600.0,300.0,30,40,OPERATIONS,BOSTON)
+(7521,WARD,SALESMAN,1250.0,500.0,30,10,ACCOUNTING,NEW YORK)
+(7521,WARD,SALESMAN,1250.0,500.0,30,20,RESEARCH,DALLAS)
+(7521,WARD,SALESMAN,1250.0,500.0,30,30,SALES,CHICAGO)
+(7521,WARD,SALESMAN,1250.0,500.0,30,40,OPERATIONS,BOSTON)
+(7566,JONES,MANAGER,2975.0,,20,10,ACCOUNTING,NEW YORK)
+(7566,JONES,MANAGER,2975.0,,20,20,RESEARCH,DALLAS)
+(7566,JONES,MANAGER,2975.0,,20,30,SALES,CHICAGO)
+(7566,JONES,MANAGER,2975.0,,20,40,OPERATIONS,BOSTON)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,10,ACCOUNTING,NEW YORK)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,20,RESEARCH,DALLAS)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,30,SALES,CHICAGO)
+(7654,MARTIN,SALESMAN,1250.0,1400.0,30,40,OPERATIONS,BOSTON)
+(7698,BLAKE,MANAGER,2850.0,,30,10,ACCOUNTING,NEW YORK)
+(7698,BLAKE,MANAGER,2850.0,,30,20,RESEARCH,DALLAS)
+(7698,BLAKE,MANAGER,2850.0,,30,30,SALES,CHICAGO)
+(7698,BLAKE,MANAGER,2850.0,,30,40,OPERATIONS,BOSTON)
+(7782,CLARK,MANAGER,2450.0,,10,10,ACCOUNTING,NEW YORK)
+(7782,CLARK,MANAGER,2450.0,,10,20,RESEARCH,DALLAS)
+(7782,CLARK,MANAGER,2450.0,,10,30,SALES,CHICAGO)
+(7782,CLARK,MANAGER,2450.0,,10,40,OPERATIONS,BOSTON)
+(7788,SCOTT,ANALYST,3000.0,,20,10,ACCOUNTING,NEW YORK)
+(7788,SCOTT,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7788,SCOTT,ANALYST,3000.0,,20,30,SALES,CHICAGO)
+(7788,SCOTT,ANALYST,3000.0,,20,40,OPERATIONS,BOSTON)
+(7839,KING,PRESIDENT,5000.0,,10,10,ACCOUNTING,NEW YORK)
+(7839,KING,PRESIDENT,5000.0,,10,20,RESEARCH,DALLAS)
+(7839,KING,PRESIDENT,5000.0,,10,30,SALES,CHICAGO)
+(7839,KING,PRESIDENT,5000.0,,10,40,OPERATIONS,BOSTON)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,10,ACCOUNTING,NEW YORK)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,20,RESEARCH,DALLAS)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,30,SALES,CHICAGO)
+(7844,TURNER,SALESMAN,1500.0,0.0,30,40,OPERATIONS,BOSTON)
+(7876,ADAMS,CLERK,1100.0,,20,10,ACCOUNTING,NEW YORK)
+(7876,ADAMS,CLERK,1100.0,,20,20,RESEARCH,DALLAS)
+(7876,ADAMS,CLERK,1100.0,,20,30,SALES,CHICAGO)
+(7876,ADAMS,CLERK,1100.0,,20,40,OPERATIONS,BOSTON)
+(7900,JAMES,CLERK,950.0,,30,10,ACCOUNTING,NEW YORK)
+(7900,JAMES,CLERK,950.0,,30,20,RESEARCH,DALLAS)
+(7900,JAMES,CLERK,950.0,,30,30,SALES,CHICAGO)
+(7900,JAMES,CLERK,950.0,,30,40,OPERATIONS,BOSTON)
+(7902,FORD,ANALYST,3000.0,,20,10,ACCOUNTING,NEW YORK)
+(7902,FORD,ANALYST,3000.0,,20,20,RESEARCH,DALLAS)
+(7902,FORD,ANALYST,3000.0,,20,30,SALES,CHICAGO)
+(7902,FORD,ANALYST,3000.0,,20,40,OPERATIONS,BOSTON)
+(7934,MILLER,CLERK,1300.0,,10,10,ACCOUNTING,NEW YORK)
+(7934,MILLER,CLERK,1300.0,,10,20,RESEARCH,DALLAS)
+(7934,MILLER,CLERK,1300.0,,10,30,SALES,CHICAGO)
+(7934,MILLER,CLERK,1300.0,,10,40,OPERATIONS,BOSTON)
+
+
+
+
+
+
+------------------------------------------------NWE PIG PRACTIES--------------------------------------
+
+graunt> B = load '/home/training/mock_data'using PigStorage (',') as (id:int,firstname:chararray,secondname:chararray,gmail:chararray,ipaddress:chararray,phone:int);
+
+graunt>dump B;
+graunt> C = filter B by sex=='Female';
+
+graunt> C = filter B by sex=='Male';
+
+
+
+(335,Diane,Gardner,dgardner9a@eepurl.com,Female,98.9.109.212,)
+(342,Evelyn,Kelley,ekelley9h@webnode.com,Female,182.245.12.131,)
+(344,Barbara,Murphy,bmurphy9j@time.com,Female,64.161.1.18,)
+(346,Deborah,Wheeler,dwheeler9l@gnu.org,Female,168.180.211.3,)
+(347,Lisa,Palmer,lpalmer9m@squarespace.com,Female,99.128.159.146,)
+(353,Mary,Reynolds,mreynolds9s@nih.gov,Female,75.90.0.155,)
+(355,Amy,Washington,awashington9u@chronoengine.com,Female,98.4.73.159,)
+(358,Jean,Wallace,jwallace9x@storify.com,Female,218.238.56.170,)
+(359,Ann,Johnston,ajohnston9y@dmoz.org,Female,93.180.126.29,)
+(365,Katherine,Bradley,kbradleya4@ucoz.com,Female,208.50.98.106,)
+(366,Barbara,Oliver,bolivera5@bloomberg.com,Female,191.186.150.224,)
+(367,Karen,Stanley,kstanleya6@istockphoto.com,Female,255.170.208.213,)
+(369,Deborah,Reed,dreeda8@opensource.org,Female,179.127.49.94,)
+(373,Tammy,Price,tpriceac@lycos.com,Female,50.163.64.86,)
+(376,Anne,Howard,ahowardaf@hud.gov,Female,130.38.116.109,)
+(377,Mary,Clark,mclarkag@stanford.edu,Female,254.192.243.47,)
+(380,Phyllis,Perez,pperezaj@alexa.com,Female,202.1.159.133,)
+(381,Sandra,Cunningham,scunninghamak@bloglines.com,Female,99.124.20.220,)
+(384,Paula,Peterson,ppetersonan@posterous.com,Female,219.94.31.171,)
+(385,Michelle,Gutierrez,mgutierrezao@theatlantic.com,Female,169.97.60.213,)
+(386,Janet,Wilson,jwilsonap@theguardian.com,Female,42.80.60.31,)
+(387,Joyce,Spencer,jspenceraq@domainmarket.com,Female,249.178.204.190,)
+(389,Beverly,Hawkins,bhawkinsas@skyrock.com,Female,199.94.11.238,)
+(391,Gloria,Stanley,gstanleyau@furl.net,Female,120.226.17.64,)
+(395,Kelly,Howard,khowarday@constantcontact.com,Female,38.51.68.103,)
+(396,Doris,Hayes,dhayesaz@paypal.com,Female,9.173.79.94,)
+(398,Elizabeth,Moore,emooreb1@domainmarket.com,Female,208.87.131.247,)
+(403,Barbara,Hawkins,bhawkinsb6@google.de,Female,238.180.62.144,)
+(404,Barbara,Butler,bbutlerb7@yahoo.com,Female,23.157.181.187,)
+(405,Cheryl,Watkins,cwatkinsb8@goo.ne.jp,Female,245.92.86.57,)
+(409,Lori,Stevens,lstevensbc@who.int,Female,82.132.11.236,)
+(411,Annie,Martin,amartinbe@telegraph.co.uk,Female,224.212.66.21,)
+(413,Martha,Weaver,mweaverbg@pagesperso-orange.fr,Female,203.248.155.192,)
+(414,Debra,Spencer,dspencerbh@hostgator.com,Female,150.34.141.203,)
+(418,Angela,Cox,acoxbl@nature.com,Female,201.183.165.35,)
+(419,Ruby,Henderson,rhendersonbm@purevolume.com,Female,156.240.167.46,)
+(420,Kelly,Garrett,kgarrettbn@marriott.com,Female,120.214.92.178,)
+(421,Linda,Fields,lfieldsbo@acquirethisname.com,Female,221.131.192.129,)
+(423,Emily,Hayes,ehayesbq@trellian.com,Female,15.138.75.117,)
+(425,Denise,Hansen,dhansenbs@miibeian.gov.cn,Female,233.2.189.116,)
+(427,Amy,James,ajamesbu@4shared.com,Female,78.201.117.56,)
+(429,Sandra,Stephens,sstephensbw@discovery.com,Female,184.151.39.229,)
+(434,Lillian,Banks,lbanksc1@hatena.ne.jp,Female,193.50.125.157,)
+(436,Andrea,Simpson,asimpsonc3@hibu.com,Female,90.194.113.135,)
+(438,Joyce,Carter,jcarterc5@pcworld.com,Female,246.7.100.180,)
+(439,Tina,Fernandez,tfernandezc6@tripadvisor.com,Female,199.20.173.155,)
+(440,Norma,Long,nlongc7@blinklist.com,Female,49.140.154.63,)
+(441,Carol,Stephens,cstephensc8@topsy.com,Female,100.194.83.244,)
+(442,Maria,Morgan,mmorganc9@ted.com,Female,48.190.161.0,)
+(448,Anne,Hernandez,ahernandezcf@freewebs.com,Female,202.248.201.172,)
+(450,Irene,Olson,iolsonch@twitpic.com,Female,201.199.86.207,)
+(452,Virginia,Hudson,vhudsoncj@nasa.gov,Female,246.157.58.176,)
+(454,Linda,Woods,lwoodscl@nasa.gov,Female,220.134.76.117,)
+(460,Janice,Shaw,jshawcr@loc.gov,Female,51.115.189.40,)
+(461,Judy,Andrews,jandrewscs@artisteer.com,Female,134.201.203.179,)
+(462,Kimberly,Fields,kfieldsct@blinklist.com,Female,176.55.202.100,)
+(465,Andrea,Bishop,abishopcw@webeden.co.uk,Female,56.219.153.213,)
+(467,Sandra,West,swestcy@elpais.com,Female,211.78.0.115,)
+(470,Tina,Gomez,tgomezd1@icio.us,Female,117.114.192.217,)
+(471,Nicole,Alexander,nalexanderd2@themeforest.net,Female,112.79.123.225,)
+(474,Jean,Evans,jevansd5@last.fm,Female,72.204.101.200,)
+(478,Dorothy,Lee,dleed9@indiatimes.com,Female,223.232.184.139,)
+(479,Stephanie,Banks,sbanksda@fema.gov,Female,231.80.0.66,)
+(480,Barbara,Chavez,bchavezdb@mysql.com,Female,152.136.11.219,)
+(481,Lisa,Oliver,loliverdc@fda.gov,Female,87.88.140.145,)
+(483,Shirley,Marshall,smarshallde@hatena.ne.jp,Female,218.198.87.91,)
+(484,Judith,Fuller,jfullerdf@usgs.gov,Female,13.119.20.199,)
+(485,Christine,Richards,crichardsdg@netvibes.com,Female,52.118.219.132,)
+(486,Tammy,Moore,tmooredh@skype.com,Female,150.170.88.85,)
+(488,Bonnie,Webb,bwebbdj@tiny.cc,Female,9.40.34.214,)
+(489,Doris,Robinson,drobinsondk@opensource.org,Female,210.111.87.213,)
+(491,Joyce,Franklin,jfranklindm@amazon.com,Female,154.154.144.246,)
+(492,Janet,Perez,jperezdn@wordpress.com,Female,97.147.236.226,)
+(496,Marilyn,Reid,mreiddr@amazonaws.com,Female,204.88.131.101,)
+(497,Louise,Hernandez,lhernandezds@archive.org,Female,245.138.237.199,)
+(498,Rebecca,Moreno,rmorenodt@elegantthemes.com,Female,118.1.239.18,)
+(499,Andrea,Smith,asmithdu@nih.gov,Female,201.59.145.251,)
+(500,Andrea,Gomez,agomezdv@latimes.com,Female,232.91.238.193,)
+(501,Anna,Dunn,adunndw@cyberchimps.com,Female,10.218.240.157,)
+(502,Norma,Turner,nturnerdx@sciencedaily.com,Female,89.18.242.253,)
+(503,Linda,Marshall,lmarshalldy@reddit.com,Female,252.7.209.42,)
+(505,Cheryl,Wagner,cwagnere0@fda.gov,Female,135.13.166.35,)
+(507,Rose,Reid,rreide2@about.com,Female,89.154.22.202,)
+(508,Sharon,Russell,srusselle3@nytimes.com,Female,163.115.8.201,)
+(511,Julia,Shaw,jshawe6@sakura.ne.jp,Female,61.139.98.59,)
+(517,Jane,Hicks,jhicksec@wikipedia.org,Female,181.140.186.212,)
+(518,Stephanie,Miller,smillered@weather.com,Female,239.117.11.3,)
+(522,Kathy,Medina,kmedinaeh@columbia.edu,Female,98.203.151.42,)
+(525,Robin,Baker,rbakerek@dropbox.com,Female,63.2.13.222,)
+(526,Amanda,Kelly,akellyel@photobucket.com,Female,200.223.192.195,)
+(528,Cynthia,Andrews,candrewsen@dedecms.com,Female,160.46.173.195,)
+(529,Phyllis,Hayes,phayeseo@mail.ru,Female,208.60.75.167,)
+(534,Sara,Gordon,sgordonet@opensource.org,Female,11.59.134.84,)
+(536,Linda,Lawrence,llawrenceev@squarespace.com,Female,232.33.72.100,)
+(538,Cheryl,Webb,cwebbex@mtv.com,Female,153.51.203.237,)
+(542,Melissa,Griffin,mgriffinf1@wikia.com,Female,35.232.110.122,)
+(543,Diane,Nguyen,dnguyenf2@craigslist.org,Female,4.207.83.188,)
+(544,Joan,Moreno,jmorenof3@yahoo.co.jp,Female,199.46.86.110,)
+(545,Melissa,Wood,mwoodf4@nbcnews.com,Female,12.197.146.186,)
+(549,Doris,Freeman,dfreemanf8@arizona.edu,Female,36.52.222.67,)
+(550,Tammy,Nichols,tnicholsf9@newyorker.com,Female,122.63.86.244,)
+(551,Andrea,Harvey,aharveyfa@github.com,Female,108.43.145.157,)
+(555,Norma,Duncan,nduncanfe@addthis.com,Female,124.137.154.247,)
+(557,Irene,James,ijamesfg@imageshack.us,Female,44.247.119.195,)
+(560,Julie,Spencer,jspencerfj@nih.gov,Female,186.48.6.17,)
+(561,Deborah,Davis,ddavisfk@slashdot.org,Female,6.169.40.209,)
+(562,Beverly,Franklin,bfranklinfl@youtube.com,Female,16.208.241.95,)
+(565,Ruth,James,rjamesfo@dell.com,Female,123.151.7.68,)
+(568,Doris,Hayes,dhayesfr@archive.org,Female,187.134.167.56,)
+(569,Marilyn,Myers,mmyersfs@china.com.cn,Female,158.40.84.124,)
+(570,Maria,Coleman,mcolemanft@mysql.com,Female,129.212.108.237,)
+(571,Andrea,Fox,afoxfu@nytimes.com,Female,15.22.254.76,)
+(573,Alice,Montgomery,amontgomeryfw@hao123.com,Female,62.7.124.115,)
+(574,Katherine,Hill,khillfx@usgs.gov,Female,73.69.58.66,)
+(575,Marie,Alexander,malexanderfy@gov.uk,Female,126.152.158.251,)
+(576,Joan,Bailey,jbaileyfz@cnbc.com,Female,188.232.97.63,)
+(579,Rachel,Robertson,rrobertsong2@columbia.edu,Female,0.10.149.79,)
+(585,Anna,Lewis,alewisg8@un.org,Female,58.158.72.81,)
+(586,Heather,Gordon,hgordong9@barnesandnoble.com,Female,110.192.184.50,)
+(588,Tammy,Olson,tolsongb@mediafire.com,Female,46.197.87.96,)
+(589,Amy,Garrett,agarrettgc@mashable.com,Female,195.117.120.175,)
+(593,Annie,Ross,arossgg@meetup.com,Female,133.67.232.119,)
+(594,Lois,Morgan,lmorgangh@sciencedirect.com,Female,120.123.32.18,)
+(597,Mildred,Baker,mbakergk@ibm.com,Female,86.64.115.110,)
+(599,Laura,Fernandez,lfernandezgm@google.com.hk,Female,234.122.49.9,)
+(600,Kathy,Morris,kmorrisgn@histats.com,Female,12.0.67.195,)
+(601,Sharon,Gutierrez,sgutierrezgo@amazon.co.jp,Female,215.112.6.95,)
+(604,Carolyn,Palmer,cpalmergr@uiuc.edu,Female,139.248.255.233,)
+(605,Barbara,Sanchez,bsanchezgs@youtu.be,Female,109.222.66.251,)
+(606,Mary,West,mwestgt@dmoz.org,Female,146.46.141.142,)
+(609,Patricia,Berry,pberrygw@bloomberg.com,Female,73.103.88.125,)
+(611,Bonnie,Thomas,bthomasgy@twitter.com,Female,192.22.15.28,)
+(612,Maria,Thomas,mthomasgz@drupal.org,Female,179.113.63.37,)
+(614,Melissa,Willis,mwillish1@google.de,Female,170.64.77.44,)
+(620,Judith,Ramos,jramosh7@imageshack.us,Female,216.213.6.22,)
+(621,Lillian,Gardner,lgardnerh8@wikia.com,Female,251.48.221.44,)
+(626,Doris,Fisher,dfisherhd@e-recht24.de,Female,98.110.27.245,)
+(627,Norma,Stevens,nstevenshe@cornell.edu,Female,128.230.104.47,)
+(631,Katherine,Hicks,khickshi@prweb.com,Female,249.45.9.222,)
+(632,Theresa,Mason,tmasonhj@reuters.com,Female,12.155.193.147,)
+(633,Rebecca,Nichols,rnicholshk@fotki.com,Female,162.211.53.19,)
+(634,Kathleen,Ruiz,kruizhl@dell.com,Female,29.178.2.248,)
+(635,Annie,Lane,alanehm@webeden.co.uk,Female,202.148.57.1,)
+(637,Robin,Williamson,rwilliamsonho@usnews.com,Female,254.250.232.144,)
+(638,Linda,Gibson,lgibsonhp@newyorker.com,Female,212.230.123.247,)
+(640,Karen,Young,kyounghr@addthis.com,Female,46.2.71.56,)
+(641,Joyce,Barnes,jbarneshs@smh.com.au,Female,89.234.148.148,)
+(642,Betty,Hunt,bhuntht@ycombinator.com,Female,58.221.230.188,)
+(646,Marilyn,Matthews,mmatthewshx@deviantart.com,Female,4.176.221.20,)
+(649,Bonnie,Hunter,bhunteri0@opera.com,Female,201.90.112.160,)
+(651,Christina,Moreno,cmorenoi2@stanford.edu,Female,77.227.234.225,)
+(652,Karen,Andrews,kandrewsi3@tmall.com,Female,144.194.92.245,)
+(655,Wanda,Gomez,wgomezi6@ucsd.edu,Female,170.110.207.2,)
+(657,Ruby,Robertson,rrobertsoni8@businessweek.com,Female,124.73.107.122,)
+(658,Sharon,Day,sdayi9@alibaba.com,Female,29.250.213.255,)
+(661,Dorothy,Henderson,dhendersonic@dmoz.org,Female,146.69.182.101,)
+(665,Lori,Kelly,lkellyig@umn.edu,Female,123.86.139.137,)
+(667,Heather,Garrett,hgarrettii@webnode.com,Female,138.216.49.83,)
+(668,Tammy,Collins,tcollinsij@quantcast.com,Female,50.183.239.53,)
+(670,Lillian,Richardson,lrichardsonil@hugedomains.com,Female,118.193.82.29,)
+(675,Lillian,Ford,lfordiq@posterous.com,Female,193.26.245.76,)
+(676,Marilyn,Gonzalez,mgonzalezir@reverbnation.com,Female,238.64.37.98,)
+(678,Janice,Harvey,jharveyit@shutterfly.com,Female,170.109.38.204,)
+(680,Anne,Ross,arossiv@cdc.gov,Female,50.218.60.29,)
+(681,Amanda,Franklin,afrankliniw@drupal.org,Female,209.39.131.152,)
+(683,Mary,Hicks,mhicksiy@shop-pro.jp,Female,151.246.46.36,)
+(685,Theresa,Kim,tkimj0@trellian.com,Female,36.88.203.148,)
+(688,Mildred,West,mwestj3@bravesites.com,Female,177.146.50.160,)
+(690,Sandra,Hill,shillj5@pinterest.com,Female,248.170.250.22,)
+(693,Doris,Montgomery,dmontgomeryj8@ask.com,Female,77.137.38.90,)
+(694,Sharon,Dean,sdeanj9@umn.edu,Female,205.208.216.141,)
+(695,Barbara,Welch,bwelchja@hexun.com,Female,99.252.182.46,)
+(696,Jessica,Welch,jwelchjb@google.com.hk,Female,149.200.99.116,)
+(697,Michelle,West,mwestjc@java.com,Female,216.127.93.116,)
+(699,Beverly,Garcia,bgarciaje@com.com,Female,86.174.225.127,)
+(702,Teresa,Romero,tromerojh@pagesperso-orange.fr,Female,156.144.230.11,)
+(704,Jennifer,Richardson,jrichardsonjj@ocn.ne.jp,Female,127.238.9.9,)
+(705,Doris,Murphy,dmurphyjk@xinhuanet.com,Female,251.12.84.212,)
+(706,Mildred,Snyder,msnyderjl@weather.com,Female,20.38.208.190,)
+(710,Amanda,Alvarez,aalvarezjp@netlog.com,Female,159.85.235.98,)
+(711,Sarah,Fernandez,sfernandezjq@google.co.uk,Female,255.115.191.106,)
+(712,Christina,Burton,cburtonjr@noaa.gov,Female,35.113.132.211,)
+(713,Marie,Murphy,mmurphyjs@usa.gov,Female,243.4.7.204,)
+(714,Sara,Wallace,swallacejt@livejournal.com,Female,228.211.169.140,)
+(716,Debra,Cook,dcookjv@twitter.com,Female,153.103.181.144,)
+(718,Jean,Sullivan,jsullivanjx@fema.gov,Female,140.185.244.66,)
+(720,Maria,Anderson,mandersonjz@home.pl,Female,223.243.224.197,)
+(721,Phyllis,Kim,pkimk0@jimdo.com,Female,68.161.129.121,)
+(723,Lillian,Alexander,lalexanderk2@bravesites.com,Female,134.41.185.220,)
+(727,Alice,Baker,abakerk6@macromedia.com,Female,233.117.47.170,)
+(730,Carolyn,Brown,cbrownk9@blog.com,Female,181.229.99.228,)
+(732,Mary,Castillo,mcastillokb@purevolume.com,Female,105.242.6.12,)
+(734,Kathryn,Woods,kwoodskd@wunderground.com,Female,196.177.43.225,)
+(736,Angela,Chapman,achapmankf@ca.gov,Female,211.45.194.209,)
+(738,Margaret,Dunn,mdunnkh@salon.com,Female,75.241.184.159,)
+(739,Frances,Hart,fhartki@deviantart.com,Female,199.230.156.211,)
+(744,Debra,Mitchell,dmitchellkn@squidoo.com,Female,141.73.135.103,)
+(745,Bonnie,Frazier,bfrazierko@sbwire.com,Female,246.245.26.18,)
+(747,Laura,Chapman,lchapmankq@liveinternet.ru,Female,174.151.94.19,)
+(748,Christina,Harper,charperkr@archive.org,Female,60.135.126.225,)
+(753,Christina,Hughes,chugheskw@stanford.edu,Female,223.202.69.68,)
+(754,Kathleen,Baker,kbakerkx@chron.com,Female,32.178.10.248,)
+(756,Melissa,Baker,mbakerkz@jiathis.com,Female,188.149.232.33,)
+(757,Christine,Arnold,carnoldl0@ted.com,Female,200.159.72.172,)
+(759,Maria,Robertson,mrobertsonl2@51.la,Female,107.197.51.105,)
+(760,Sara,Stephens,sstephensl3@umich.edu,Female,154.172.231.202,)
+(762,Cynthia,Gibson,cgibsonl5@answers.com,Female,83.176.173.14,)
+(764,Wanda,Meyer,wmeyerl7@go.com,Female,133.230.65.145,)
+(765,Linda,Hicks,lhicksl8@apple.com,Female,217.250.202.31,)
+(766,Jane,Young,jyoungl9@abc.net.au,Female,237.132.132.227,)
+(768,Stephanie,Larson,slarsonlb@indiegogo.com,Female,131.162.53.110,)
+(770,Carolyn,Cook,ccookld@paginegialle.it,Female,216.58.13.42,)
+(772,Nicole,Gray,ngraylf@ameblo.jp,Female,183.160.87.37,)
+(773,Kathryn,Romero,kromerolg@example.com,Female,203.68.1.193,)
+(776,Maria,Grant,mgrantlj@exblog.jp,Female,3.112.234.30,)
+(780,Norma,Weaver,nweaverln@booking.com,Female,241.77.34.197,)
+(781,Bonnie,Flores,bfloreslo@craigslist.org,Female,240.39.8.108,)
+(782,Doris,Washington,dwashingtonlp@discovery.com,Female,9.107.212.181,)
+(784,Lillian,Perry,lperrylr@time.com,Female,196.198.33.220,)
+(785,Louise,Garza,lgarzals@netvibes.com,Female,35.206.220.87,)
+(786,Jane,Arnold,jarnoldlt@over-blog.com,Female,198.9.188.158,)
+(787,Laura,Nguyen,lnguyenlu@omniture.com,Female,46.113.145.250,)
+(788,Sharon,Sanders,ssanderslv@tiny.cc,Female,66.170.226.28,)
+(789,Ann,Morgan,amorganlw@hostgator.com,Female,173.39.79.254,)
+(792,Linda,Reynolds,lreynoldslz@sina.com.cn,Female,104.179.240.34,)
+(794,Diana,Phillips,dphillipsm1@examiner.com,Female,17.111.223.30,)
+(796,Joyce,Mccoy,jmccoym3@ovh.net,Female,75.45.227.102,)
+(797,Rachel,Barnes,rbarnesm4@mysql.com,Female,203.98.251.82,)
+(799,Jessica,Mitchell,jmitchellm6@cargocollective.com,Female,126.151.112.230,)
+(801,Anne,Banks,abanksm8@answers.com,Female,41.24.237.149,)
+(804,Nancy,Scott,nscottmb@4shared.com,Female,236.91.102.66,)
+(805,Lillian,Andrews,landrewsmc@columbia.edu,Female,177.244.121.191,)
+(807,Amy,Kim,akimme@unesco.org,Female,180.160.190.129,)
+(808,Evelyn,Sanders,esandersmf@fema.gov,Female,147.245.192.103,)
+(810,Helen,Allen,hallenmh@mtv.com,Female,38.128.130.63,)
+(814,Laura,Cole,lcoleml@bbb.org,Female,169.136.178.1,)
+(818,Patricia,Porter,pportermp@nifty.com,Female,27.12.180.160,)
+(819,Judy,Ellis,jellismq@comsenz.com,Female,226.10.254.61,)
+(820,Sara,Hudson,shudsonmr@nature.com,Female,176.240.208.3,)
+(822,Kathryn,Schmidt,kschmidtmt@home.pl,Female,131.164.40.165,)
+(823,Betty,Sanders,bsandersmu@icio.us,Female,59.35.7.109,)
+(824,Diana,Cole,dcolemv@edublogs.org,Female,180.174.232.103,)
+(826,Sandra,Gonzales,sgonzalesmx@sina.com.cn,Female,129.82.122.209,)
+(827,Christina,Gilbert,cgilbertmy@moonfruit.com,Female,184.70.39.155,)
+(828,Irene,Lawrence,ilawrencemz@paginegialle.it,Female,52.49.226.128,)
+(829,Joan,Robinson,jrobinsonn0@usatoday.com,Female,60.204.234.236,)
+(831,Sarah,Morgan,smorgann2@blogs.com,Female,226.37.26.241,)
+(834,Heather,Hanson,hhansonn5@ask.com,Female,178.183.71.230,)
+(835,Patricia,Frazier,pfraziern6@digg.com,Female,222.12.70.190,)
+(838,Michelle,Lynch,mlynchn9@google.nl,Female,40.208.136.18,)
+(842,Joan,Gomez,jgomeznd@archive.org,Female,130.151.122.135,)
+(844,Kathleen,White,kwhitenf@dyndns.org,Female,97.241.216.139,)
+(845,Helen,Stewart,hstewartng@tinypic.com,Female,243.182.33.133,)
+(847,Barbara,Harrison,bharrisonni@devhub.com,Female,100.66.63.35,)
+(848,Stephanie,Jackson,sjacksonnj@flickr.com,Female,178.16.177.142,)
+(849,Doris,Turner,dturnernk@1688.com,Female,242.110.61.203,)
+(850,Evelyn,Perez,epereznl@paginegialle.it,Female,163.46.174.155,)
+(851,Cheryl,Wood,cwoodnm@barnesandnoble.com,Female,94.249.199.141,)
+(852,Sandra,Smith,ssmithnn@dion.ne.jp,Female,212.135.58.55,)
+(853,Ruby,Morgan,rmorganno@themeforest.net,Female,61.152.180.184,)
+(854,Janice,Robertson,jrobertsonnp@mapy.cz,Female,95.232.238.69,)
+(855,Kelly,Perez,kpereznq@tripadvisor.com,Female,37.75.208.147,)
+(857,Betty,Duncan,bduncanns@aol.com,Female,3.223.90.63,)
+(858,Denise,Perry,dperrynt@mac.com,Female,246.157.181.45,)
+(860,Debra,Grant,dgrantnv@sohu.com,Female,125.60.210.81,)
+(861,Donna,Jenkins,djenkinsnw@meetup.com,Female,50.168.81.70,)
+(862,Teresa,Black,tblacknx@i2i.jp,Female,86.155.11.119,)
+(863,Janice,Phillips,jphillipsny@furl.net,Female,146.77.4.239,)
+(864,Nancy,Pierce,npiercenz@issuu.com,Female,63.104.224.25,)
+(871,Diana,Fuller,dfullero6@spotify.com,Female,211.218.208.17,)
+(873,Anna,Franklin,afranklino8@wunderground.com,Female,93.229.139.53,)
+(876,Theresa,Griffin,tgriffinob@go.com,Female,159.184.142.76,)
+(878,Nancy,Reid,nreidod@bbb.org,Female,11.75.195.160,)
+(879,Amy,Webb,awebboe@dell.com,Female,209.42.182.85,)
+(881,Pamela,Moreno,pmorenoog@unblog.fr,Female,211.168.126.244,)
+(883,Kathryn,Gonzalez,kgonzalezoi@paginegialle.it,Female,55.77.155.5,)
+(884,Kathleen,Hansen,khansenoj@businessinsider.com,Female,143.147.7.15,)
+(888,Betty,Simpson,bsimpsonon@sitemeter.com,Female,206.217.115.220,)
+(890,Laura,Lewis,llewisop@house.gov,Female,54.20.203.242,)
+(891,Jennifer,Myers,jmyersoq@simplemachines.org,Female,198.31.105.105,)
+(893,Marie,Watson,mwatsonos@bandcamp.com,Female,193.254.150.144,)
+(894,Lisa,Reynolds,lreynoldsot@tinypic.com,Female,139.71.2.146,)
+(896,Joyce,Cole,jcoleov@nydailynews.com,Female,237.136.75.160,)
+(899,Robin,Henry,rhenryoy@prlog.org,Female,103.248.252.104,)
+(902,Carol,Griffin,cgriffinp1@de.vu,Female,19.31.31.52,)
+(903,Kimberly,Carr,kcarrp2@t-online.de,Female,107.217.136.11,)
+(904,Evelyn,Jenkins,ejenkinsp3@wikipedia.org,Female,120.117.222.106,)
+(905,Kathryn,Bradley,kbradleyp4@about.com,Female,254.99.40.244,)
+(907,Karen,Burton,kburtonp6@geocities.jp,Female,94.193.176.31,)
+(908,Sarah,Berry,sberryp7@jalbum.net,Female,117.80.254.188,)
+(909,Denise,Stevens,dstevensp8@dailymail.co.uk,Female,52.235.176.193,)
+(911,Julie,Simmons,jsimmonspa@nasa.gov,Female,228.232.82.182,)
+(912,Lisa,Cunningham,lcunninghampb@deliciousdays.com,Female,135.87.83.174,)
+(914,Amanda,Russell,arussellpd@reverbnation.com,Female,243.31.140.14,)
+(918,Diane,Bell,dbellph@guardian.co.uk,Female,83.206.115.172,)
+(920,Nicole,Bell,nbellpj@elpais.com,Female,144.228.107.142,)
+(921,Karen,Lawrence,klawrencepk@cloudflare.com,Female,21.16.39.20,)
+(923,Annie,Meyer,ameyerpm@macromedia.com,Female,80.110.90.92,)
+(924,Margaret,Bennett,mbennettpn@indiegogo.com,Female,97.241.230.116,)
+(925,Sarah,Simmons,ssimmonspo@miitbeian.gov.cn,Female,55.149.126.233,)
+(929,Kimberly,Garcia,kgarciaps@storify.com,Female,57.78.217.108,)
+(933,Jean,Peterson,jpetersonpw@newyorker.com,Female,95.10.167.184,)
+(934,Ann,Harper,aharperpx@flavors.me,Female,52.249.247.208,)
+(935,Debra,Pierce,dpiercepy@odnoklassniki.ru,Female,82.184.79.42,)
+(937,Jacqueline,Dunn,jdunnq0@amazon.co.jp,Female,216.60.58.192,)
+(939,Anna,Lane,alaneq2@engadget.com,Female,115.140.233.79,)
+(942,Susan,Peterson,spetersonq5@wisc.edu,Female,51.32.87.94,)
+(943,Linda,Chapman,lchapmanq6@wikipedia.org,Female,36.242.146.33,)
+(945,Amanda,Tucker,atuckerq8@phoca.cz,Female,197.33.169.194,)
+(946,Paula,Kelly,pkellyq9@flickr.com,Female,194.199.163.105,)
+(949,Mildred,Stephens,mstephensqc@netvibes.com,Female,214.187.6.75,)
+(953,Alice,Morales,amoralesqg@bloomberg.com,Female,254.76.33.105,)
+(954,Heather,Greene,hgreeneqh@java.com,Female,59.114.207.147,)
+(956,Diane,Cook,dcookqj@engadget.com,Female,206.240.162.192,)
+(958,Lisa,Welch,lwelchql@canalblog.com,Female,166.194.99.129,)
+(959,Denise,Richardson,drichardsonqm@gravatar.com,Female,87.131.249.238,)
+(960,Jane,Hamilton,jhamiltonqn@hao123.com,Female,27.46.4.5,)
+(961,Evelyn,Weaver,eweaverqo@yellowpages.com,Female,27.68.128.30,)
+(962,Dorothy,Stone,dstoneqp@shop-pro.jp,Female,255.181.10.93,)
+(965,Wanda,Medina,wmedinaqs@about.me,Female,178.163.117.179,)
+(967,Kathleen,Little,klittlequ@dmoz.org,Female,247.10.196.0,)
+(969,Judy,Stewart,jstewartqw@apache.org,Female,99.97.50.226,)
+(971,Amanda,Kim,akimqy@adobe.com,Female,130.207.73.68,)
+(973,Teresa,Watkins,twatkinsr0@salon.com,Female,136.212.59.165,)
+(975,Dorothy,Andrews,dandrewsr2@wikispaces.com,Female,123.104.151.43,)
+(978,Norma,Nguyen,nnguyenr5@marriott.com,Female,54.53.150.218,)
+(981,Judy,Lee,jleer8@mozilla.org,Female,196.98.27.204,)
+(982,Andrea,Flores,afloresr9@epa.gov,Female,237.93.176.92,)
+(986,Heather,Taylor,htaylorrd@columbia.edu,Female,137.232.4.39,)
+(989,Ashley,Cook,acookrg@shop-pro.jp,Female,206.209.205.64,)
+(990,Stephanie,Perry,sperryrh@reference.com,Female,241.104.216.207,)
+(991,Katherine,Ward,kwardri@desdev.cn,Female,164.146.177.37,)
+(994,Carol,Brown,cbrownrl@nature.com,Female,193.20.28.102,)
+(997,Pamela,Weaver,pweaverro@scientificamerican.com,Female,119.143.177.59,)
